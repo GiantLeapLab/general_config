@@ -3,10 +3,15 @@ general_config
 
 General configuration to simplify the local web development 
 
-Preparing and Using
-------------------
+Installation
+===================
+1. Add ```Include `<your path with config>/mysite_universal.conf` ```
+2. Copy `vhost_add.sh` in your bin path 
 
-Foexample for user **wellic**:
+Preparing and Using
+===================
+
+For example for user **wellic**:
 
 * create developers catalog: /home/wellic/sites/var 
  ```bash
@@ -31,12 +36,24 @@ mkdir -p /home/wellic/sites/var/my.domain.com
   ```bash
 cd /home/wellic/sites/var/my.domain.com
 vhost_add.sh
+
+or 
+
+sudo vim vhost_add.sh
+and add
+127.1.0.1 my.domain.com.localhost
 ```
 
 * load or create files in your project directory:
   * vim index.html
   * etc.
 
-* type in browser http://my.domain.com/ 
+* type in browser http://my.domain.com.localhost/ or http://localhost/my.domain.com/
+
+Customization
+=============
+
+Replace in the file `mysite_universal.conf` text `/home/wellic/sites/var` on your path.
 
 
+ 

@@ -33,9 +33,10 @@ cd /home/wellic/sites/var/my.domain.com
 vhost_add.sh
 ```
 
-* load files in your project:
-  *..... 
+* load or create files in your project directory:
+  * vim index.html
+  * etc.
 
-* type in brouser http://my.domain.com/ 
+* type in browser http://my.domain.com/ 
 
 

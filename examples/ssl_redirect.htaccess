@@ -1,0 +1,7 @@
+
+RewriteEngine On
+
+RewriteBase /
+
+RewriteCond %{SERVER_PORT} 80 
+RewriteRule ^(.*)$ https://www.your_domain.com/$1 [R,L,NE]

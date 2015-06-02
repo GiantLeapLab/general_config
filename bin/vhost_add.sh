@@ -2,7 +2,7 @@
 
 set -e
 
-suffix=".localhost"
+suffix=".loc"
 ip="127.1.0.1"
 
 hosts_file='/etc/hosts'

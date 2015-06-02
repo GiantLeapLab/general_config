@@ -41,14 +41,14 @@ or
 
 sudo vim vhost_add.sh
 and add
-127.1.0.1 my.domain.com.localhost
+127.1.0.1 my.domain.com.loc
 ```
 
 * load or create files in your project directory:
   * vim index.html
   * etc.
 
-* type in browser http://my.domain.com.localhost/ or http://localhost/my.domain.com/
+* type in browser http://my.domain.com.loc/ or http://localhost/my.domain.com/
 
 Customization
 =============

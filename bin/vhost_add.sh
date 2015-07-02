@@ -18,13 +18,12 @@ c_cmd='\033[1;32m'
 c_clr='\033[0m'
 
 print_help(){
-  echo -e "${c_err}
-Usage: ${0##*/} [parameter]
+  echo -e "${c_err}Usage: ${0##*/} [parameter]
 Parameters:
   -h : Help
-  -l : Show exists hosts
-  -a : Add host for current directory
-  -d : Remove host for current directory
+  -l [host_name] : Show exists hosts and check host for current directory or 'host_name'
+  -a [host_name] : Add host for current directory or 'host_name'
+  -d [host_name] : Remove host for current directory or 'host_name'
 ${c_clr}"
 }
 
@@ -63,50 +62,79 @@ exit_if_error() {
 
 print_all_hosts() {
   local FOUND
-  echo_info 'All hosts' 1 0 $c_info
+  echo_info 'All hosts' 1 0 $c_inf
   FOUND=$( cat "$hosts_file" | grep -P "${suffix}\b" )
-  echo_info "$FOUND" 0 0 $c_cmd
+  echo_info "$FOUND" 0 1 $c_cmd
 }
 
-print_hosts() {
+print_current_host() {
+  local l_new_host=${1:-$new_host}
   local FOUND
-  echo_info 'Exits hosts' 1 0 $c_info
-  grep -q "$new_host" "$hosts_file" \
-    && FOUND=$(grep -B 1 -A 1 "$new_host" "$hosts_file")  \
-    || FOUND=$(cat "$hosts_file" | grep -P "${suffix}\b" | tail -n 5 ) 
-  echo_info "...\n$FOUND\n..." 0 0 $c_cmd
+  grep -q "$l_new_host" "$hosts_file" \
+    && ( \
+#      echo_info "Host:" 1 0 $c_warn;
+      FOUND=$(grep -B 0 -A 0 "$l_new_host" "$hosts_file"); \
+      echo_info "$FOUND" 0 1 $c_inf )\
+    || :
+}
+
+print_if_exists_host() {
+  local l_new_host=${1:-$new_host}
+  grep -q "$l_new_host" "$hosts_file" \
+    && ( \
+      echo_info "The host '$l_new_host' already exists" 1 0 $c_warn;
+      print_current_host $l_new_host ) \
+    || :
+}
+
+print_not_exists_host() {
+  local l_new_host=${1:-$new_host}
+  print_all_hosts
+  grep -q "$l_new_host" "$hosts_file" || echo_info "The host '$l_new_host' not exists" 1 1 $c_err  && :
+}
+
+print_added_host() {
+  local l_new_host=${1:-$new_host}
+  echo_info "The host '$l_new_host' was added" 1 0 $c_warn
+  print_current_host $l_new_host
+}
+
+print_removed_host() {
+  local l_new_host=${1:-$new_host}
+  echo_info "The host '$l_new_host' was removed" 1 1 $c_warn
 }
 
 _list() {
+  local l_new_host=${2:-$new_host}
   print_all_hosts
-  grep -q "$new_host" "$hosts_file" && ( echo_info "The host '$new_host' already exists" 1 1 $c_warn ) || :
-
+  print_if_exists_host $l_new_host
 }
 
 _add() {
-  grep -q "$new_host" "$hosts_file" \
-    && ( echo_info "The host '$new_host' already exists" 1 0 $c_err ) \
-    || ( sudo sh -c "echo ${ip} ${new_host} >> $hosts_file" ; echo_info "The host '$new_host' was added" 1 0 $c_warn )
-  print_hosts
+  local l_new_host=${2:-$new_host}
+  grep -q "$l_new_host" "$hosts_file" \
+    && print_if_exists_host $l_new_host \
+    || ( sudo sh -c "echo ${ip} ${l_new_host} >> $hosts_file"; print_added_host $l_new_host )
 }
 
 _remove() {
-  grep -q "$new_host" "$hosts_file" \
-    && ( sudo sed -i "/${new_host}/d" ${hosts_file}; echo_info "The host '$new_host' was removed" 1 0 $c_warn;   print_hosts ) \
-    || ( echo_info "The host '$new_host' not exists" 1 0 $c_err;   print_all_hosts )
+  local l_new_host=${2:-$new_host}
+  grep -q "$l_new_host" "$hosts_file" \
+    && ( sudo sed -i "/${l_new_host}/d" ${hosts_file}; print_removed_host $l_new_host ) \
+    || print_not_exists_host $l_new_host
 }
 
 proces_input_params() {
   while getopts ":hlad" opt; do
     case $opt in
       l)
-        _list
+        _list $*
         ;;
       a)
-        _add
+        _add $*
         ;;
       d)
-        _remove
+        _remove $*
         ;;
       h|*)
         _list

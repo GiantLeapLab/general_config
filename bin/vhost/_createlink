@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+DIRNAME=${1##*/}
+
+echo "$DIRNAME"
+echo "ln -s ../$DIRNAME ./test"
+
+rm test
+ln -s ../"$DIRNAME" ./test

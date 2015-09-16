@@ -4,7 +4,7 @@ clear
 
 set -e
 
-suffix=".loc"
+suffix=".local"
 ip="127.1.0.1"
 
 hosts_file='/etc/hosts'

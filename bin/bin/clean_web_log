@@ -1,0 +1,10 @@
+#!/bin/sh
+
+LOGDIR=/home/wellic/sites/var/log
+
+find $LOGDIR -type f -exec sudo truncate -s 0 {} \;
+sudo rm -f $LOGDIR/cachegrind.out*
+
+#sudo truncate -s 0 /home/wellic/sites/var/log/access.log
+#sudo truncate -s 0 /home/wellic/sites/var/log/error.log
+#sudo truncate -s 0 /home/wellic/sites/var/log/rewrite.log

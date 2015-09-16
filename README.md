@@ -6,7 +6,7 @@ General configuration to simplify the local web development using Apache 2.+
 Installation
 ===================
 1. Add ```Include `<your path with config>/mysite_universal.conf` ``` in Apache config file
-2. Copy `vhost_add.sh` in your bin path 
+2. Copy `vhost_add` in your bin path 
 
 Preparing and Using
 ===================

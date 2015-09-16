@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
+set -e 
 
 DIRNAME=${1##*/}
+VHOST_DIR=_test_by_ip_
 
 echo "$DIRNAME"
-echo "ln -s ../$DIRNAME ./test"
+echo "ln -s ../$DIRNAME ./$VHOST_DIR"
 
 rm test
-ln -s ../"$DIRNAME" ./test
+ln -s ../"$DIRNAME" ./"$VHOST_DIR"

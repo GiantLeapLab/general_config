@@ -1,0 +1,40 @@
+
+_read_value_from_config() {
+  STATUS_OK=0
+  STATUS_ERR=1
+  EMPTY=''
+
+  ### Input parameters ###
+  FILE_NAME=${1:-''}
+  USE_DEFAULT=${2:-'1'}
+  EXT_FILE_DEFAULT=${3:-'default'}
+
+  STATUS=$STATUS_ERR
+  VALUE=$EMPTY
+
+  [ ! -z "$FILE_NAME" -a ! -e "$FILE_NAME" -a $USE_DEFAULT != "0" ] && FILE_NAME="$FILE_NAME.$EXT_FILE_DEFAULT"
+
+  if [ ! -z "$FILE_NAME" -a -e "$FILE_NAME" ] ; then
+    VALUE=$(cat "$FILE_NAME")
+    STATUS=$STATUS_OK;
+  fi
+
+  echo $VALUE
+  return  $STATUS
+}
+
+_create_dir() {
+local CMD=create_dir
+echo "$CMD $*"
+  local NEWDIR=${1:-''}
+  local USE_SUDO=${2:-''}
+  if [ "$NEWDIR" = '' ]; then 
+    echo_type_error 'Error: create empty dirname catalog'
+    exit 1
+  fi
+  if [ ! -d "$NEWDIR" ]; then
+    [ "$USE_SUDO" = '1' ] && USE_SUDO=sudo || USE_SUDO=''
+    echo "$USE_SUDO mkdir" -p "$NEWDIR"
+    $USE_SUDO mkdir -p "$NEWDIR"
+  fi
+}

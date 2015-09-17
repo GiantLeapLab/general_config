@@ -1,0 +1,52 @@
+STATUS_OK=0
+STATUS_ERR=1
+ERROR_CODE=
+
+
+_if_debug_mode() {
+  [ "$_DEBUG_" = 1 ] 
+  return $?
+}
+
+_print_if_debug() {
+  if ! _if_debug_mode; then 
+    exit 0
+  fi
+  echo "$*"
+}
+
+_exit_if_error() {
+  local status=${1:-$STATUS_OK}
+  if [ "$1" = "$STATUS_OK" ]; then 
+   return "$status"
+  fi
+  local msg=${2:-}
+  local errorCode=${3:-$status}
+  echo "Error!!! Code=$1"
+  echo "$msg"
+  exit "$errorCode"
+}
+
+_fix_var() {
+  local var=${1-''} 
+  var=$(echo "$var" | sed 's/^ //g' | sed 's/ $//g' | sed 's/ /_/g') 
+  echo $var
+}
+
+_dirname_full() {
+  env
+  local CMD=$FUNCNAME
+  _print_if_debug "$CMD 1: $*"
+  [ $# -eq 0 ] && return $STATUS_ERR
+  local TEST_DIR=$1
+  _print_if_debug "$CMD 2: $TEST_DIR"
+  [ -e "$TEST_DIR" ] && return $STATUS_ERR
+  echo $(cd "$TEST_DIR" && pwd)
+  return $?
+}
+
+export -f _if_debug_mode
+export -f _print_if_debug
+export -f _exit_if_error
+export -f _fix_var
+export -f _dirname_full

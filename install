@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 set -e 
+echo "$0 $*"
 
-INSTALL=${1:-'0'}
+INSTALL=${1:-0}
 NAME_PROJECTS_DIR="sites2"
 USERNAME=$(whoami)
 
@@ -14,66 +15,91 @@ APACHE_CFG_DIR=/etc/apache2/sites-available
 
 HOMEDIR="$HOME"
 PROJECTS_DIR="$HOMEDIR/$NAME_PROJECTS_DIR"
-LOG_DIR="$PROJECTS_DIR/log"
-WWW_DIR="$PROJECTS_DIR/www"
+LOG_DIR="$PROJECTS_DIR/var/log"
+WWW_DIR="$PROJECTS_DIR/var/www"
 VHOST_DIR="$WWW_DIR/vhost"
 LOCALHOST_DIR="$WWW_DIR/localhost"
 
+is_test_mode() {
+ [ "$TESTMODE" = '1' ]
+ return $?
+}
+
 display_before_exit() {
-  PATH="BIN_DIR":$PATH
-  export $PATH
+  PATH="$BIN_DIR":$PATH
+  [ is_test_mode ] && echo export PATH=$PATH
+  export PATH="$PATH"
   echo -e "\nAdd $BIN_DIR to your PATH variables"
 }
 
 echo_type_error() {
+local CMD=echo_type_error
+echo "$CMD $*"
   echo "$1"
 }
 
 create_dir() {
+local CMD=create_dir
+echo "$CMD $*"
   local NEWDIR=${1:-''}
   local USE_SUDO=${2:-''}
   if [ "$NEWDIR" = '' ]; then 
     echo_type_error 'Error: create empty dirname catalog'
     exit 1
   fi
-  if [ -d "$NEWDIR" ]; then
+  if [ ! -d "$NEWDIR" ]; then
     [ "$USE_SUDO" = '1' ] && USE_SUDO=sudo || USE_SUDO=''
+    echo "$USE_SUDO mkdir" -p "$NEWDIR"
     $USE_SUDO mkdir -p "$NEWDIR"
   fi
 }
 
 create_dirs_for_test_mode() {
+local CMD=create_dirs_for_test_mode
+echo "$CMD $*"
   local ROOT=''
-  if [ "$TESTMODE" = '1' ]; then 
+  if is_test_mode; then 
     ROOT="$PROJECTS_DIR/root"
-    ETC_DIR="$ROOT/$ETC_DIR"
-    BIN_DIR="$ROOT/$BIN_DIR"
-    APACHE_CFG_DIR="$ROOT/$APACHE_CFG_DIR"
-    create_dir "$ETC_DIR"
-    create_dir "$BIN_DIR"
-    create_dir "$APACHE"
+    ETC_DIR="$ROOT$ETC_DIR"
+    BIN_DIR="$ROOT$BIN_DIR"
+    APACHE_CFG_DIR="$ROOT$APACHE_CFG_DIR"
+
+    create_dir "$ETC_DIR" \
+    && create_dir "$BIN_DIR" \
+    && create_dir "$APACHE_CFG_DIR" \
+
   fi
 }
 
 create_projects_dirs() {
-  create_dirs_for_test_mode
-  create_dir "$LOG_DIR"
-  create_dir "$WWW_DIR"
-  create_dir "$VHOST_DIR"
-  create_dir "$LOCALHOST_DIR"
+local CMD=create_projects_dirs
+echo "$CMD $*"
+  create_dirs_for_test_mode \
+  && create_dir "$LOG_DIR" \
+  && create_dir "$WWW_DIR" \
+  && create_dir "$VHOST_DIR" \
+  && create_dir "$LOCALHOST_DIR"
 }
 
 copy_files() {
+local CMD=copy_files
+echo "$CMD $*"
 }
 
 initial_setup() {
+local CMD=initial_setup
+echo "$CMD $*"
 }
 
-change_vars_for_test_mode
+finish_setup() {
+local CMD=finish_setup
+echo "$CMD $*"
+}
+
 create_projects_dirs
 copy_files
 initial_setup
-restart_web_server_after_install
+finish_setup
 display_before_exit
 
 exit 0

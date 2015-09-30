@@ -5,8 +5,8 @@ set -e
 DIRNAME=${1##*/}
 VHOST_DIR=_test_by_ip_
 
-echo "$DIRNAME"
-echo "ln -s ../$DIRNAME ./$VHOST_DIR"
+[ -e "$VHOST_DIR" ] && rm "$VHOST_DIR"
 
-rm test
-ln -s ../"$DIRNAME" ./"$VHOST_DIR"
+echo "$DIRNAME"
+echo "ln -s ../$DIRNAME  $VHOST_DIR"
+ln -s ../"$DIRNAME" "$VHOST_DIR"
